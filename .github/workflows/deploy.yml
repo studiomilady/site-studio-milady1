@@ -1,0 +1,31 @@
+name: Deploy to Bunny
+
+on:
+  push:
+    branches:
+      - main  # Vai rodar quando fizer push no branch principal
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the project
+        run: npm run build
+
+      - name: Upload to Bunny
+        run: |
+          curl -X POST "https://br.storage.bunnycdn.com/studio-milady" \
+          -H "AccessKey: ${{ secrets.BUNNY_API_KEY }}" \
+          -F "file=@dist/*"
